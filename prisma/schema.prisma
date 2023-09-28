@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int   @id @default(autoincrement())
+  email     String   @unique
+  lastName  String
+  firstName String
+  hashedPassword String
+  resetToken ResetToken[]
+  phone    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  orders Order[]
+  cart Cart[]
+  shippingInformation ShippingInformation[]
+
+}
+
+model ResetToken {
+  id        Int   @id @default(autoincrement())
+  hashedToken     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  revoked Boolean @default(false)
+}
+
+model Adress {
+  id        Int   @id @default(autoincrement())
+  street     String   
+  city  String
+  zipCode String
+  country  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shippingInformation ShippingInformation[]
+}
+model Product {
+  id        Int   @id @default(autoincrement())
+  name     String   
+  description  String
+  price Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  category Category @relation(fields: [categoryId], references: [id])
+  color String
+  categoryId Int
+  orderProducts Order[]
+  pictures Pictures[]
+  cartProducts Cart[]
+  stocks Stock[]
+}
+
+model Category {
+  id        Int   @id @default(autoincrement())
+  name     String   
+  description  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  products Product[]
+}
+
+model Order {
+  id        Int   @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  products Product[]
+
+}
+
+model Pictures {
+  id        Int   @id @default(autoincrement())
+  url     String   
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  product Product @relation(fields: [productId], references: [id])
+  productId Int
+}
+
+model Cart {
+  id        Int   @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  products Product[]
+}
+
+model ShippingInformation {
+  id        Int   @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  adress Adress @relation(fields: [adressId], references: [id])
+  adressId Int
+
+}
+
+model Stock {
+  id        Int   @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  product Product @relation(fields: [productId], references: [id])
+  productId Int
+  quantity Int
+}
