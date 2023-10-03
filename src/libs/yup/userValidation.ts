@@ -12,17 +12,19 @@ export const userValidationYup = yup.object().shape({
   firstName: yup
     .string()
     .min(2)
-    .required('First name is required')
+    .max(20)
+    .required('First name is required, min 2 characters, max 20 characters')
     .matches(/^[A-Za-z -]+$/),
   lastName: yup
     .string()
     .min(2)
-    .required('Last name is required')
+    .max(20)
+    .required('Last name is required, min 2 characters, max 20 characters')
     .matches(/^[A-Za-z -]+$/),
   phone: yup
     .string()
     .length(10)
-    .required('Phone is required')
+    .required('Phone is required, 10 characters')
 });
 
 export interface User extends yup.InferType<typeof userValidationYup> {}

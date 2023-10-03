@@ -1,5 +1,4 @@
 import { type Request, type Response, type NextFunction } from 'express';
-import getErrorMessage from '../utils/getErrorMessage';
 import { userValidationYup } from '../libs/yup/userValidation';
 
 const validateNewUser = () => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -10,7 +9,7 @@ const validateNewUser = () => async (req: Request, res: Response, next: NextFunc
     next();
   } catch (error) {
     console.error('Validation error:', error);
-    res.status(400).json(getErrorMessage(error));
+    res.status(400).json({ error: 'Validation error', details: error });
   }
 };
 

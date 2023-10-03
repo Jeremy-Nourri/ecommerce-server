@@ -25,9 +25,15 @@ userRouter.post('/login',
   }
 );
 
-userRouter.put('/update', authToken, (req: Request, res: Response) => {
-  void updateUser(req, res);
-});
+userRouter.put('/update',
+  authToken,
+  (req: Request, res: Response, next: NextFunction) => {
+    void validateNewUser()(req, res, next);
+  },
+  (req: Request, res: Response) => {
+    void updateUser(req, res);
+  }
+);
 
 userRouter.delete('/delete', authToken, (req: Request, res: Response) => {
   void deleteUser(req, res);

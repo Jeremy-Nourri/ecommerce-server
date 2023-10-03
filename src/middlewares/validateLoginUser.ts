@@ -6,8 +6,8 @@ const validateLoginUser = () => async (req: Request, res: Response, next: NextFu
   try {
     await userLoginValidationYup.validate(req.body, { abortEarly: false });
     next();
-  } catch (err) {
-    res.status(400).json(err);
+  } catch (error) {
+    res.status(400).json({ error: 'Validation error', details: error });
   }
 };
 
