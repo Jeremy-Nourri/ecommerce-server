@@ -8,6 +8,15 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const user = await prisma.user.findFirst({
       where: {
         email: req.body.email
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        hashedPassword: true,
+        createdAt: true
       }
     });
 
@@ -35,7 +44,8 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      phone: user.phone
+      phone: user.phone,
+      createdAt: user.createdAt
     });
   } catch (error) {
     res.status(500).json(error);
@@ -57,7 +67,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email: req.body.email,
         hashedPassword,
@@ -67,12 +77,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       }
     });
 
-    res.status(200).json({
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phone: user.phone
-    });
+    res.status(200).json({ message: 'User created' });
   } catch (error) {
     res.status(500).json(error);
   }
@@ -101,7 +106,8 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      phone: user.phone
+      phone: user.phone,
+      createUser: user.createdAt
     });
   } catch (error) {
     res.status(500).json(error);
