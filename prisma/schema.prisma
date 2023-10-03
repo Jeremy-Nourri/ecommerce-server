@@ -21,7 +21,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt 
   orders Order[]
-  cart Cart[]
+  cart Cart?
   shippingInformation ShippingInformation[]
 
 }
@@ -46,6 +46,7 @@ model Adress {
   updatedAt DateTime @updatedAt
   shippingInformation ShippingInformation[]
 }
+
 model Product {
   id        Int   @id @default(autoincrement())
   name     String   
@@ -95,7 +96,7 @@ model Cart {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt 
   user User @relation(fields: [userId], references: [id])
-  userId Int
+  userId Int @unique
   products Product[]
 }
 
@@ -107,7 +108,6 @@ model ShippingInformation {
   userId Int
   adress Adress @relation(fields: [adressId], references: [id])
   adressId Int
-
 }
 
 model Stock {
