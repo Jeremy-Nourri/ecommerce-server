@@ -3,3 +3,12 @@ node_modules
 .env
 
 docker-compose.yml
+
+# Ignore all log files
+*.log
+
+# Ignore all migrations files
+**prisma/migrations/**
+
+#Ignore all seed files
+**prisma/seed.ts

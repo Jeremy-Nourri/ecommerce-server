@@ -1,5 +1,5 @@
 import { type Request, type Response, Router } from 'express';
-import { getProducts, getProductById } from '../controllers/productController';
+import { getProducts, getProductById, getProductsByCategory } from '../controllers/productController';
 
 const productRouter = Router();
 
@@ -11,6 +11,10 @@ productRouter.get('/products', (req: Request, res: Response) => {
 
 productRouter.get('/product/:id', (req: Request, res: Response) => {
   void getProductById(req, res);
+});
+
+productRouter.get('/category/:name', (req: Request, res: Response) => {
+  void getProductsByCategory(req, res);
 });
 
 export default productRouter;
