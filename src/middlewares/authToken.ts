@@ -18,7 +18,7 @@ const authToken = (req: Request, res: Response, next: NextFunction): void => {
       process.env.JWT_SECRET as ProcessEnv['JWT_SECRET'],
       (err: jwt.VerifyErrors | null, decoded: DecodedJwtPayload) => {
         if (err != null) {
-          res.status(401).json({ error: 'Invalid access token' });
+          res.status(401).json({ message: 'Access not authorized' });
         } else {
           req.body.userId = decoded.id;
           next();
