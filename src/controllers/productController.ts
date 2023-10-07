@@ -10,13 +10,42 @@ export const getProducts = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-export const getProductById = async (req: Request, res: Response): Promise<void> => {
+export const getProductByName = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { id } = req.params;
-    const product = await prisma.product.findUnique({ where: { id: Number(id) } });
-    res.status(200).json(product);
+    const { name } = req.params;
+    const product = await prisma.product.findFirst({
+      where: { name },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        shortDescription: true,
+        fullDescription: true,
+        composition: true,
+        parfum: true,
+        weight: true,
+        category: {
+          select: {
+            name: true
+          }
+        },
+        pictures: {
+          select: {
+            id: true,
+            url: true
+          }
+        }
+      }
+
+    });
+
+    if (product == null) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    return res.status(200).json(product);
   } catch (error) {
-    res.status(500).json({ error: 'Cannot get product' });
+    return res.status(500).json({ error: 'Cannot get product' });
   }
 };
 

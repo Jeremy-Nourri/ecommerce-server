@@ -37,9 +37,11 @@ model Address {
   userId Int @unique
 }
 
+// product name is unique
+
 model Product {
   id        Int   @id @default(autoincrement())
-  name     String   
+  name     String   @unique
   price Float
   shortDescription  String   
   fullDescription  String

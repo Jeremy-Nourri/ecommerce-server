@@ -1,5 +1,5 @@
 import { type Request, type Response, Router } from 'express';
-import { getProducts, getProductById, getProductsByCategory } from '../controllers/productController';
+import { getProducts, getProductByName, getProductsByCategory } from '../controllers/productController';
 
 const productRouter = Router();
 
@@ -9,8 +9,8 @@ productRouter.get('/products', (req: Request, res: Response) => {
   void getProducts(req, res);
 });
 
-productRouter.get('/product/:id', (req: Request, res: Response) => {
-  void getProductById(req, res);
+productRouter.get('/product/:name', (req: Request, res: Response) => {
+  void getProductByName(req, res);
 });
 
 productRouter.get('/category/:name', (req: Request, res: Response) => {

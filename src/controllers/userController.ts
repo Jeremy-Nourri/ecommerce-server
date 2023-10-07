@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { type Request, type Response } from 'express';
 import signToken from '../utils/signToken';
 
-export const loginUser = async (req: Request, res: Response): Promise<void> => {
+export const loginUser = async (req: Request, res: Response): Promise<Response> => {
   try {
     const user = await prisma.user.findFirst({
       where: {
@@ -21,18 +21,20 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (user == null) {
-      res.status(400).json('Email or password is wrong');
-      return;
+      return res.status(401).json('Email or password is wrong');
     }
 
     const validPassword = await bcrypt.compare(req.body.password, user.hashedPassword);
 
     if (!validPassword) {
-      res.status(400).json('Email or password is wrong');
-      return;
+      return res.status(401).json('Email or password is wrong');
     }
 
     const token = signToken(user.id);
+
+    if (token == null) {
+      return res.status(500).json({ message: 'Unknown server error, user not logged in' });
+    }
 
     res.cookie('accessToken', token, {
       httpOnly: true,
@@ -40,7 +42,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       sameSite: 'none'
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -48,11 +50,11 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       createdAt: user.createdAt
     });
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json({ message: 'Unknown server error, user not logged in' });
   }
 };
 
-export const createUser = async (req: Request, res: Response): Promise<void> => {
+export const createUser = async (req: Request, res: Response): Promise<Response> => {
   try {
     const userExists = await prisma.user.findFirst({
       where: {
@@ -61,8 +63,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     });
 
     if (userExists != null) {
-      res.status(400).json('Email already exists');
-      return;
+      return res.status(409).json('Email already exists');
     }
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -77,13 +78,13 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       }
     });
 
-    res.status(200).json({ message: 'User created' });
+    return res.status(201).json({ message: 'User created' });
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json({ message: 'Unknown server error, user not created' });
   }
 };
 
-export const updateUser = async (req: Request, res: Response): Promise<void> => {
+export const updateUser = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { userId } = req.body;
 
@@ -102,7 +103,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
       }
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -110,11 +111,11 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
       createUser: user.createdAt
     });
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json({ message: 'Unknown server error, user not updated' });
   }
 };
 
-export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+export const deleteUser = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { userId } = req.body;
 
@@ -123,15 +124,14 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
         id: Number(userId)
       }
     });
-    res.cookie('accessToken', '', {
+    res.clearCookie('accessToken', {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
-      expires: new Date(0)
+      sameSite: 'none'
     });
 
-    res.json('User deleted');
+    return res.json('User deleted');
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json({ message: 'Unknown server error, user not deleted' });
   }
 };
