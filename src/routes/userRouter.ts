@@ -1,12 +1,22 @@
-import { type Request, type Response, type NextFunction, Router } from 'express';
-import { loginUser, createUser, updateUser, deleteUser } from '../controllers/userController';
+import { type Request as ExpressRequest, type Response, type NextFunction, Router } from 'express';
+import { getUserById, loginUser, createUser, updateUser, deleteUser } from '../controllers/userController';
 import authToken from '../middlewares/authToken';
 import validateNewUser from '../middlewares/validateNewUser';
 import validateLoginUser from '../middlewares/validateLoginUser';
 
+interface Request extends ExpressRequest {
+  locals: {
+    userId: string
+  }
+}
+
 const userRouter = Router();
 
 // using void because return value and errors are handling in the function
+
+userRouter.get('/account', authToken, (req: Request, res: Response) => {
+  void getUserById(req, res);
+});
 
 userRouter.post('/signup',
   (req: Request, res: Response, next: NextFunction) => {

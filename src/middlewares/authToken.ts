@@ -1,9 +1,15 @@
-import { type Request, type Response, type NextFunction } from 'express';
+import { type Request as ExpressRequest, type Response, type NextFunction } from 'express';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import type ProcessEnv from '../@types/env';
 
 interface DecodedJwtPayload extends JwtPayload {
   id: string
+}
+
+interface Request extends ExpressRequest {
+  locals: {
+    userId: string
+  }
 }
 
 const authToken = (req: Request, res: Response, next: NextFunction): void => {
@@ -20,7 +26,7 @@ const authToken = (req: Request, res: Response, next: NextFunction): void => {
         if (err != null) {
           res.status(401).json({ message: 'Access not authorized' });
         } else {
-          req.body.userId = decoded.id;
+          req.locals = { userId: decoded.id };
           next();
         }
       }
