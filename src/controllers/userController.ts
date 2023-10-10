@@ -93,6 +93,20 @@ export const loginUser = async (req: Request, res: Response): Promise<Response> 
   }
 };
 
+export const logoutUser = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    res.clearCookie('accessToken', {
+      httpOnly: true
+      // secure: true,
+      // sameSite: 'none'
+    });
+
+    return res.status(200).json('User logged out');
+  } catch (error) {
+    return res.status(500).json({ message: 'Unknown server error, user not logged out' });
+  }
+};
+
 export const createUser = async (req: Request, res: Response): Promise<Response> => {
   try {
     const userExists = await prisma.user.findFirst({

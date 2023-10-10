@@ -1,5 +1,5 @@
 import { type Request as ExpressRequest, type Response, type NextFunction, Router } from 'express';
-import { getUserById, loginUser, createUser, updateUser, deleteUser } from '../controllers/userController';
+import { getUserById, loginUser, logoutUser, createUser, updateUser, deleteUser } from '../controllers/userController';
 import authToken from '../middlewares/authToken';
 import validateNewUser from '../middlewares/validateNewUser';
 import validateLoginUser from '../middlewares/validateLoginUser';
@@ -34,6 +34,10 @@ userRouter.post('/login',
     void loginUser(req, res);
   }
 );
+
+userRouter.post('/logout', authToken, (req: Request, res: Response) => {
+  void logoutUser(req, res);
+});
 
 userRouter.put('/update',
   authToken,
